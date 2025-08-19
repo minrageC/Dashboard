@@ -1,317 +1,249 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Profissional - 30 Dias</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plano Diário — 2.000 → 300.000 MZN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    .num { font-variant-numeric: tabular-nums; }
+    table { border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #e5e7eb; }
+    .sticky-th { position: sticky; top: 0; background: white; box-shadow: 0 1px 0 #e5e7eb; z-index: 1; }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900">
+  <main class="max-w-6xl mx-auto p-4 md:p-8">
+    <header class="mb-6">
+      <h1 class="text-2xl md:text-3xl font-bold">Plano diário — 2.000 MZN → 300.000 MZN</h1>
+      <p class="text-sm text-gray-600">Período: <span id="periodo" class="font-medium">01/09/2025 → 31/01/2026</span> • Dias (inclusivos): <span id="dias" class="font-medium num"></span></p>
+    </header>
 
-<div class="flex h-screen">
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white/80 dark:bg-gray-800/80 backdrop-blur shadow-lg flex flex-col">
-    <div class="p-4 text-center font-bold text-lg border-b border-gray-200 dark:border-gray-700">📊 Meu Dashboard</div>
-    <nav class="flex-1 p-4 space-y-2">
-      <a href="#" onclick="mostrarPagina('banca')" class="block p-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">💰 Gestão de Banca</a>
-      <a href="#" onclick="mostrarPagina('entradas')" class="block p-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">📑 Gestão de Entradas</a>
-      <a href="#" onclick="mostrarPagina('outro')" class="block p-3 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition">⚙️ Outro Projeto</a>
-    </nav>
-    <div class="p-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">© 2025 Meu Dashboard</div>
-  </aside>
-
-  <!-- Conteúdo -->
-  <main class="flex-1 p-6 overflow-y-auto">
-    <div class="flex justify-between items-center mb-6">
-      <h1 id="tituloPagina" class="text-2xl font-bold">💰 Gestão de Banca</h1>
-      <button onclick="alternarTema()" class="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:scale-105 transition">🌙</button>
-    </div>
-
-    <!-- Página Gestão de Banca -->
-    <div id="pagina-banca">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold mb-4">Simulação de Gestão de Banca (30 dias)</h2>
-
-        <label class="block font-semibold mt-2">Banca Inicial (MZN)</label>
-        <input type="number" id="banca" value="0" placeholder="Digite a banca inicial" class="w-full p-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700">
-
-        <label class="block font-semibold mt-2">Meta (% de lucro)</label>
-        <input type="number" id="meta" value="0" placeholder="Digite a meta (%)" class="w-full p-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700">
-
-        <label class="block font-semibold mt-2">Stop Loss (% perda máxima)</label>
-        <input type="number" id="stop_loss" value="0" placeholder="Digite o stop loss (%)" class="w-full p-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700">
-
-        <div class="flex gap-2 mt-4">
-          <button onclick="iniciarBanca()" class="flex-1 bg-blue-600 text-white p-2 rounded-lg shadow hover:bg-blue-700">Iniciar 30 dias</button>
-          <button onclick="resetarBanca()" class="flex-1 bg-gray-500 text-white p-2 rounded-lg shadow hover:bg-gray-600">Reset</button>
+    <section class="grid md:grid-cols-2 gap-4 mb-6">
+      <!-- Parâmetros -->
+      <div class="bg-white rounded-2xl shadow p-4 md:p-6">
+        <h2 class="text-lg font-semibold mb-4">Parâmetros</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="text-sm">Banca inicial (MZN)
+            <input id="banca" type="number" class="w-full mt-1 rounded-xl border p-2 num" value="2000" min="1" />
+          </label>
+          <label class="text-sm">Meta final (MZN)
+            <input id="meta" type="number" class="w-full mt-1 rounded-xl border p-2 num" value="300000" min="1" />
+          </label>
+          <label class="text-sm">Início
+            <input id="inicio" type="date" class="w-full mt-1 rounded-xl border p-2" value="2025-09-01" />
+          </label>
+          <label class="text-sm">Fim
+            <input id="fim" type="date" class="w-full mt-1 rounded-xl border p-2" value="2026-01-31" />
+          </label>
+          <label class="text-sm">Entradas/dia (máx)
+            <input id="entradas" type="number" class="w-full mt-1 rounded-xl border p-2 num" value="4" min="1" max="20" />
+          </label>
+          <label class="text-sm">Stop-loss diário (% da banca)
+            <input id="slPct" type="number" class="w-full mt-1 rounded-xl border p-2 num" value="2.5" step="0.1" />
+          </label>
         </div>
-
-        <div id="statusBadge" class="mt-4 p-2 rounded font-bold text-center hidden"></div>
-        <div id="confirmMeta" class="mt-4 hidden flex gap-2 justify-center">
-          <span class="font-semibold">Meta atingida?</span>
-          <button onclick="confirmarMeta(true)" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Sim</button>
-          <button onclick="confirmarMeta(false)" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Não</button>
+        <div class="mt-4 flex gap-2">
+          <button id="recalcular" class="px-4 py-2 rounded-xl bg-black text-white shadow">Recalcular</button>
+          <button id="exportar" class="px-4 py-2 rounded-xl bg-gray-800 text-white shadow">Exportar CSV</button>
+          <button id="imprimir" class="px-4 py-2 rounded-xl bg-gray-200 shadow">Imprimir</button>
         </div>
+      </div>
 
-        <p id="resultado" class="mt-4"></p>
+      <!-- Resumo do dia 1 -->
+      <div class="bg-white rounded-2xl shadow p-4 md:p-6">
+        <h2 class="text-lg font-semibold mb-3">Resumo (Dia 1)</h2>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="p-3 rounded-xl bg-gray-50">
+            <div class="text-gray-500">Crescimento diário necessário</div>
+            <div class="text-xl font-bold num" id="rPct">—</div>
+          </div>
+          <div class="p-3 rounded-xl bg-gray-50">
+            <div class="text-gray-500">Lucro meta do dia 1</div>
+            <div class="text-xl font-bold num"><span id="lucroDia1">—</span> MZN</div>
+          </div>
+          <div class="col-span-2 p-3 rounded-xl bg-gray-50">
+            <div class="text-gray-500 mb-2">Stake sugerida p/ 1 acerto (Dia 1)</div>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="p-2 rounded-lg bg-white border"><div class="text-xs text-gray-500">1.5x</div><div class="font-semibold num" id="s15">—</div></div>
+              <div class="p-2 rounded-lg bg-white border"><div class="text-xs text-gray-500">1.8x</div><div class="font-semibold num" id="s18">—</div></div>
+              <div class="p-2 rounded-lg bg-white border"><div class="text-xs text-gray-500">2.0x</div><div class="font-semibold num" id="s20">—</div></div>
+              <div class="p-2 rounded-lg bg-white border"><div class="text-xs text-gray-500">2.2x</div><div class="font-semibold num" id="s22">—</div></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Fórmula: stake = lucro_dia / (multiplicador − 1). Ex.: para 2.0x, stake = lucro_dia.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-gray-50">
+            <div class="text-gray-500">Stop-loss (Dia 1)</div>
+            <div class="text-xl font-bold num"><span id="slValor">—</span> MZN</div>
+          </div>
+          <div class="p-3 rounded-xl bg-gray-50">
+            <div class="text-gray-500">Entradas por dia (máx)</div>
+            <div class="text-xl font-bold" id="entrResumo">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <table id="tabela" class="w-full mt-4 border-collapse hidden">
+    <!-- Tabela -->
+    <section class="bg-white rounded-2xl shadow overflow-hidden">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Evolução diária (plano composto)</h2>
+        <div class="text-xs text-gray-500">Valores arredondados. Stop-win = lucro do dia.</div>
+      </div>
+      <div class="overflow-auto max-h-[65vh]">
+        <table class="w-full text-sm">
           <thead>
-            <tr class="bg-blue-600 text-white">
-              <th class="p-2">Dia</th>
-              <th class="p-2">Banca Inicial</th>
-              <th class="p-2">Lucro</th>
-              <th class="p-2">Banca Final</th>
+            <tr class="sticky-th">
+              <th class="text-left p-2">Dia</th>
+              <th class="text-left p-2">Data</th>
+              <th class="text-right p-2">Banca Início</th>
+              <th class="text-right p-2">Lucro Meta</th>
+              <th class="text-right p-2">Stop-loss</th>
+              <th class="text-right p-2">Stake 1.5x</th>
+              <th class="text-right p-2">Stake 1.8x</th>
+              <th class="text-right p-2">Stake 2.0x</th>
+              <th class="text-right p-2">Stake 2.2x</th>
+              <th class="text-right p-2">Banca Final</th>
             </tr>
           </thead>
-          <tbody class="text-center"></tbody>
-        </table>
-
-        <canvas id="grafico" class="mt-6"></canvas>
-      </div>
-    </div>
-
-    <!-- Página Gestão de Entradas -->
-    <div id="pagina-entradas" class="hidden">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold mb-4">Plano de Gestão de Entradas</h2>
-
-        <label for="numEntradas" class="block font-semibold">Número de entradas:</label>
-        <input type="number" id="numEntradas" min="1" max="20" value="0" placeholder="Número de entradas" class="p-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700">
-        <div class="mt-3 flex gap-2">
-          <button id="gerarBtn" class="flex-1 bg-green-600 text-white p-2 rounded-lg shadow hover:bg-green-700">Gerar Tabela</button>
-          <button id="resetBtn" class="flex-1 bg-gray-500 text-white p-2 rounded-lg shadow hover:bg-gray-600 hidden">Resetar Valores</button>
-        </div>
-
-        <table id="tabelaEntradas" class="w-full mt-4 border-collapse hidden">
-          <caption class="text-lg font-semibold mb-2">Lucro Total: <span id="lucroTotal">0</span> MZN</caption>
-          <thead>
-            <tr class="bg-green-600 text-white">
-              <th class="p-2">Entrada</th>
-              <th class="p-2">Aposta (MZN)</th>
-              <th class="p-2">Multiplicador</th>
-              <th class="p-2">Lucro da Aposta</th>
-              <th class="p-2">Lucro Acumulado</th>
-            </tr>
-          </thead>
-          <tbody class="text-center"></tbody>
+          <tbody id="tbody"></tbody>
         </table>
       </div>
-    </div>
+    </section>
 
-    <!-- Página Outro -->
-    <div id="pagina-outro" class="hidden">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold">Outro Projeto</h2>
-        <p>Adicione aqui seu próximo projeto...</p>
-      </div>
-    </div>
-
+    <footer class="text-xs text-gray-500 mt-6">
+      <p>Disciplina recomendada: 3–5 entradas/dia; atingir <span class="num">stop-win</span> e encerrar; respeitar <span class="num">stop-loss</span> diário.</p>
+    </footer>
   </main>
-</div>
 
-<script>
-// ===== Navegação =====
-function mostrarPagina(nome) {
-  document.querySelectorAll('[id^="pagina-"]').forEach(el => el.classList.add("hidden"));
-  document.getElementById(`pagina-${nome}`).classList.remove("hidden");
-  document.getElementById("tituloPagina").textContent =
-    nome === 'banca' ? "💰 Gestão de Banca" :
-    nome === 'entradas' ? "📑 Gestão de Entradas" :
-    "⚙️ Outro Projeto";
-}
+  <script>
+    const fmt = (n) => new Intl.NumberFormat('pt-MZ', {maximumFractionDigits: 2}).format(n);
+    const fmtPct = (n) => new Intl.NumberFormat('pt-MZ', {maximumFractionDigits: 3}).format(n);
 
-// ===== Tema Escuro =====
-const temaSalvo = localStorage.getItem('tema');
-if (temaSalvo === 'dark') {
-  document.documentElement.classList.add('dark');
-}
-
-function alternarTema() {
-  document.documentElement.classList.toggle('dark');
-  if (document.documentElement.classList.contains('dark')) {
-    localStorage.setItem('tema', 'dark');
-  } else {
-    localStorage.setItem('tema', 'light');
-  }
-}
-
-// ===== Gestão de Entradas =====
-document.getElementById("gerarBtn").addEventListener("click", () => {
-  const num = parseInt(document.getElementById("numEntradas").value);
-  if (!num || num <= 0) {
-    alert("Digite um número válido de entradas!");
-    return;
-  }
-
-  let tbody = document.getElementById("tabelaEntradas").querySelector("tbody");
-  tbody.innerHTML = "";
-  let lucroAcumulado = 0;
-  let apostaInicial = 100; // valor fixo, pode alterar
-
-  for (let i = 1; i <= num; i++) {
-    let multiplicador = 2; // fixo para exemplo
-    let lucro = apostaInicial * (multiplicador - 1);
-    lucroAcumulado += lucro;
-    tbody.innerHTML += `
-      <tr class="border-t">
-        <td class="p-2">${i}</td>
-        <td class="p-2">${apostaInicial.toFixed(2)}</td>
-        <td class="p-2">${multiplicador.toFixed(2)}</td>
-        <td class="p-2">${lucro.toFixed(2)}</td>
-        <td class="p-2">${lucroAcumulado.toFixed(2)}</td>
-      </tr>`;
-  }
-
-  document.getElementById("lucroTotal").textContent = lucroAcumulado.toFixed(2);
-  document.getElementById("tabelaEntradas").classList.remove("hidden");
-  document.getElementById("resetBtn").classList.remove("hidden");
-});
-
-document.getElementById("resetBtn").addEventListener("click", () => {
-  document.getElementById("tabelaEntradas").classList.add("hidden");
-  document.getElementById("resetBtn").classList.add("hidden");
-  document.getElementById("lucroTotal").textContent = "0";
-  document.getElementById("numEntradas").value = 0;
-});
-
-// ===== Gestão de Banca com localStorage =====
-let chartBanca;
-let banca, bancaMeta, bancaStopLoss;
-let evolucao = [];
-let metaConfirmada = null;
-
-// Recupera dados salvos
-window.addEventListener('load', () => {
-  const dados = JSON.parse(localStorage.getItem('banca30dias'));
-  if (dados) {
-    banca = dados.banca;
-    evolucao = dados.evolucao;
-    bancaMeta = dados.bancaMeta;
-    bancaStopLoss = dados.bancaStopLoss;
-    metaConfirmada = dados.metaConfirmada;
-    document.getElementById("banca").value = dados.bancaInicial;
-    document.getElementById("meta").value = dados.metaPercent;
-    document.getElementById("stop_loss").value = dados.stopPercent * 100;
-    preencherTabelaBanca();
-    desenharGraficoBanca(evolucao);
-    if (metaConfirmada !== null) mostrarStatus(metaConfirmada ? "✅ Meta confirmada pelo usuário" : "⚠️ Meta não confirmada", metaConfirmada ? "meta" : "stop");
-  }
-});
-
-function iniciarBanca() {
-  banca = parseFloat(document.getElementById("banca").value);
-  const metaPercent = parseFloat(document.getElementById("meta").value);
-  const stopPercent = parseFloat(document.getElementById("stop_loss").value) / 100;
-  if (!banca || !metaPercent || !stopPercent) { alert("Preencha todos os valores antes de iniciar."); return; }
-
-  bancaMeta = banca * (1 + metaPercent / 100);
-  bancaStopLoss = banca * (1 - stopPercent);
-  evolucao = [banca];
-  metaConfirmada = null;
-
-  document.getElementById("resultado").innerHTML = `Meta: <b>${bancaMeta.toFixed(2)} MZN</b><br>Stop Loss: <b>${bancaStopLoss.toFixed(2)} MZN</b>`;
-  document.getElementById("confirmMeta").classList.add("hidden");
-
-  for (let dia = 1; dia <= 30; dia++) {
-    let lucro = banca * 0.20;
-    let bancaFinal = banca + lucro;
-    evolucao.push(bancaFinal);
-    banca = bancaFinal;
-
-    if (!document.getElementById("confirmMeta").classList.contains("flex") && banca >= bancaMeta && metaConfirmada === null) {
-      document.getElementById("confirmMeta").classList.remove("hidden");
+    function daysInclusive(d1, d2){
+      const ms = (d2 - d1) / (1000*60*60*24);
+      return Math.floor(ms) + 1;
     }
 
-    if (banca <= bancaStopLoss) {
-      mostrarStatus(`❌ Stop Loss atingido no dia ${dia}`, "stop");
+    function recalc(){
+      const banca = Number(document.getElementById('banca').value || 0);
+      const meta = Number(document.getElementById('meta').value || 0);
+      const inicio = new Date(document.getElementById('inicio').value);
+      const fim = new Date(document.getElementById('fim').value);
+      const entradas = Number(document.getElementById('entradas').value || 1);
+      const slPct = Number(document.getElementById('slPct').value || 0);
+
+      if(!banca || !meta || !(inicio instanceof Date) || !(fim instanceof Date) || isNaN(inicio) || isNaN(fim) || fim < inicio){
+        alert('Verifique os parâmetros.');
+        return;
+      }
+
+      const N = daysInclusive(inicio, fim);
+      document.getElementById('dias').textContent = N;
+      document.getElementById('periodo').textContent = `${inicio.toLocaleDateString('pt-PT')} → ${fim.toLocaleDateString('pt-PT')}`;
+
+      const r = Math.pow(meta / banca, 1 / N) - 1; // taxa diária composta
+      document.getElementById('rPct').textContent = fmtPct(r * 100) + '%';
+      document.getElementById('entrResumo').textContent = entradas;
+
+      // Dia 1
+      const lucroDia1 = banca * r;
+      document.getElementById('lucroDia1').textContent = fmt(lucroDia1);
+      document.getElementById('s15').textContent = fmt(lucroDia1 / (1.5 - 1));
+      document.getElementById('s18').textContent = fmt(lucroDia1 / (1.8 - 1));
+      document.getElementById('s20').textContent = fmt(lucroDia1 / (2.0 - 1));
+      document.getElementById('s22').textContent = fmt(lucroDia1 / (2.2 - 1));
+      document.getElementById('slValor').textContent = fmt(banca * slPct / 100);
+
+      // Tabela
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = '';
+
+      let B = banca;
+      for(let i=1; i<=N; i++){
+        const d = new Date(inicio);
+        d.setDate(inicio.getDate() + (i-1));
+        const lucro = B * r;
+        const SL = B * slPct / 100;
+        const stake15 = lucro / (1.5 - 1);
+        const stake18 = lucro / (1.8 - 1);
+        const stake20 = lucro / (2.0 - 1);
+        const stake22 = lucro / (2.2 - 1);
+        const Bfim = B * (1 + r);
+
+        const tr = document.createElement('tr');
+        const cells = [
+          i,
+          d.toLocaleDateString('pt-PT'),
+          fmt(B),
+          fmt(lucro),
+          fmt(SL),
+          fmt(stake15),
+          fmt(stake18),
+          fmt(stake20),
+          fmt(stake22),
+          fmt(Bfim),
+        ];
+        cells.forEach((c, idx)=>{
+          const td = document.createElement('td');
+          td.className = 'p-2 ' + (idx>=2 ? 'text-right num' : '');
+          td.textContent = c;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+        B = Bfim;
+      }
+
+      // CSV export data cache
+      window.__export = {banca, meta, inicio, fim, N, r, slPct};
     }
-  }
 
-  preencherTabelaBanca();
-  desenharGraficoBanca(evolucao);
-  salvarLocalStorage(metaPercent, stopPercent);
-}
-
-function preencherTabelaBanca() {
-  const corpo = document.getElementById("tabela").querySelector("tbody");
-  corpo.innerHTML = "";
-  let b = evolucao[0];
-  for (let i = 1; i < evolucao.length; i++) {
-    corpo.innerHTML += `<tr class="border-t">
-      <td class="p-2">${i}</td>
-      <td class="p-2">${b.toFixed(2)}</td>
-      <td class="p-2">${(evolucao[i]-b).toFixed(2)}</td>
-      <td class="p-2">${evolucao[i].toFixed(2)}</td>
-    </tr>`;
-    b = evolucao[i];
-  }
-  document.getElementById("tabela").classList.remove("hidden");
-}
-
-function confirmarMeta(decisao) {
-  metaConfirmada = decisao;
-  mostrarStatus(decisao ? "✅ Meta confirmada pelo usuário" : "⚠️ Meta não confirmada", decisao ? "meta" : "stop");
-  document.getElementById("confirmMeta").classList.add("hidden");
-  salvarLocalStorage(parseFloat(document.getElementById("meta").value), parseFloat(document.getElementById("stop_loss").value)/100);
-}
-
-function mostrarStatus(msg, tipo) {
-  const badge = document.getElementById("statusBadge");
-  badge.className = `mt-4 p-2 rounded font-bold text-center ${tipo === "meta" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`;
-  badge.textContent = msg;
-  badge.classList.remove("hidden");
-}
-
-function desenharGraficoBanca(dados) {
-  const ctx = document.getElementById("grafico").getContext("2d");
-  if (chartBanca) chartBanca.destroy();
-  chartBanca = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: dados.map((_, i) => `Dia ${i}`),
-      datasets: [{
-        label: "Evolução da Banca",
-        data: dados,
-        borderColor: "#3b82f6",
-        backgroundColor: "rgba(59,130,246,0.2)",
-        fill: true,
-        tension: 0.3,
-        pointRadius: 4,
-      }]
+    function exportCSV(){
+      if(!window.__export){ return; }
+      const {banca, meta, inicio, fim, N, r, slPct} = window.__export;
+      let B = banca;
+      let lines = [
+        ['Dia','Data','Banca Inicio','Lucro Meta','Stop-loss','Stake 1.5x','Stake 1.8x','Stake 2.0x','Stake 2.2x','Banca Final']
+      ];
+      for(let i=1; i<=N; i++){
+        const d = new Date(inicio);
+        d.setDate(inicio.getDate() + (i-1));
+        const lucro = B * r;
+        const SL = B * slPct / 100;
+        const row = [
+          i,
+          d.toISOString().slice(0,10),
+          B.toFixed(2),
+          lucro.toFixed(2),
+          SL.toFixed(2),
+          (lucro/(1.5-1)).toFixed(2),
+          (lucro/(1.8-1)).toFixed(2),
+          (lucro/(2.0-1)).toFixed(2),
+          (lucro/(2.2-1)).toFixed(2),
+          (B*(1+r)).toFixed(2)
+        ];
+        lines.push(row);
+        B = B * (1 + r);
+      }
+      const csv = lines.map(a=>a.join(',')).join('\n');
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'plano_diario_2000_para_300000.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-  });
-}
 
-function resetarBanca() {
-  banca = 0;
-  evolucao = [];
-  metaConfirmada = null;
-  document.getElementById("banca").value = 0;
-  document.getElementById("meta").value = 0;
-  document.getElementById("stop_loss").value = 0;
-  document.getElementById("resultado").innerHTML = "";
-  document.getElementById("statusBadge").classList.add("hidden");
-  document.getElementById("confirmMeta").classList.add("hidden");
-  document.getElementById("tabela").classList.add("hidden");
-  if (chartBanca) chartBanca.destroy();
-  localStorage.removeItem("banca30dias");
-}
+    document.getElementById('recalcular').addEventListener('click', recalc);
+    document.getElementById('exportar').addEventListener('click', exportCSV);
+    document.getElementById('imprimir').addEventListener('click', ()=> window.print());
 
-function salvarLocalStorage(metaPercent, stopPercent) {
-  localStorage.setItem('banca30dias', JSON.stringify({
-    bancaInicial: parseFloat(document.getElementById("banca").value),
-    banca: banca,
-    evolucao: evolucao,
-    bancaMeta: bancaMeta,
-    bancaStopLoss: bancaStopLoss,
-    metaConfirmada: metaConfirmada,
-    metaPercent: metaPercent,
-    stopPercent: stopPercent
-  }));
-}
-</script>
-
+    // inicializa
+    recalc();
+  </script>
 </body>
 </html>
